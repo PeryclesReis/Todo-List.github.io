@@ -1,45 +1,20 @@
-const botao2 = document.querySelectorAll('button')[1];
-const botao = document.querySelector('button');
+const listaDeTarefas = document.querySelector('#lista-tarefas');
+const textInput = document.querySelector('#texto-tarefa');
+const botao = document.querySelector('#criar-tarefa');
+const botao2 = document.querySelector('#apaga-tudo');
+const botao3 = document.querySelector('#remover-finalizados');
+const botao4 = document.querySelector('#remover-selecionado');
 
-function criaParagrafo(textString) {
-  const paragraph = document.querySelector('p');
-  paragraph.id = 'funcionamento';
-  paragraph.innerHTML = textString;
-}
-criaParagrafo('Clique duas vezes em um item para marcá-lo como completo.');
-
-function caixaTexto(idString) {
-  const newInput = document.querySelector('input');
-  newInput.id = idString;
-}
-caixaTexto('texto-tarefa');
-
-function criarLista() {
-  const secaoOl = document.querySelector('.ol');
-  const newList = document.createElement('ol');
-  newList.id = 'lista-tarefas';
-  secaoOl.appendChild(newList);
-}
-criarLista();
-
-function criarBotao(tarefa) {
-  const newTask = document.querySelector('button');
-  newTask.id = tarefa;
-  newTask.innerHTML = 'Adicionar';
-}
-criarBotao('criar-tarefa');
-
-// limpa o o texto digitado na caixa de texto
+// limpa o texto digitado na caixa de texto
 function limpaTexto() {
-  const textInput = document.querySelector('#texto-tarefa');
-  if (textInput.value !== '') {
+  if (textInput.value) {
     textInput.value = '';
   }
 }
 
 // limpa elemento com class color
-function pegaItem() {
-  const itensLista = document.querySelector('#lista-tarefas').childNodes;
+function limpaClassItem() {
+  const itensLista = listaDeTarefas.childNodes;
   for (let index = 0; index < itensLista.length; index += 1) {
     const elementoItem = itensLista[index];
     if (elementoItem.classList.contains('color')) {
@@ -48,47 +23,44 @@ function pegaItem() {
   }
 }
 
-// funcao para selecionar elemento da lista com acao de click
+// busca elemento e muda nome da classe para color
 function trocaFundoItemLista() {
-  const itensLista = document.querySelector('#lista-tarefas').childNodes;
+  const itensLista = listaDeTarefas.childNodes;
   for (let index = 0; index < itensLista.length; index += 1) {
     const elementoItem = itensLista[index];
     elementoItem.addEventListener('click', function (event) {
-      pegaItem();
+      limpaClassItem();
       event.target.classList.toggle('color');
     });
   }
 }
 
+// remove item com a classe completed
+function removeItemCompleto() {
+  const selectedClass = document.querySelectorAll('.completed');
+  for (let index = 0; index < selectedClass.length; index += 1) {
+    const element = selectedClass[index];
+    if (element) {
+      element.remove();
+    }
+  }
+}
+
 // cria uma lista ordenada dentro de ol
 function itemLista() {
-  const item = document.querySelector('#lista-tarefas');
-  const textInput = document.querySelector('#texto-tarefa');
   const listaTarefa = document.createElement('li');
   listaTarefa.innerText = textInput.value;
-  item.appendChild(listaTarefa);
+  listaDeTarefas.appendChild(listaTarefa);
   limpaTexto();
   trocaFundoItemLista();
 }
-botao.addEventListener('click', itemLista);
 
 // funcao para riscar um item da lista que ja foi completado
-const listaDeTarefas = document.querySelector('#lista-tarefas');
 function riscaItem(event) {
-  const selecionarItem = document.querySelector('.completed');
   const tarefaSelecionada = event.target;
-  if (selecionarItem !== null) {
-    tarefaSelecionada.classList.remove('completed');
-  } else {
-    tarefaSelecionada.classList.add('completed');
-  }
+  tarefaSelecionada.classList.toggle('completed');
 }
 listaDeTarefas.addEventListener('dblclick', riscaItem);
-
-window.onload = function criaBotaoApagar() {
-    botao2.id = 'apaga-tudo';
-    botao2.innerText = 'Apagar Lista';
-};
 
 // remove itens da lista
 function apagaLista() {
@@ -96,4 +68,18 @@ function apagaLista() {
     listaDeTarefas.removeChild(listaDeTarefas.firstChild);
   }
 }
-botao2.addEventListener('click', apagaLista);
+
+// remove item selecionado
+function removeItemSelecionado() {
+  const selectedClass = document.querySelector('.color');
+  if (selectedClass) {
+    selectedClass.remove();
+  }
+}
+
+window.onload = function () {
+  botao.addEventListener('click', itemLista);
+  botao2.addEventListener('click', apagaLista);
+  botao3.addEventListener('click', removeItemCompleto);
+  botao4.addEventListener('click', removeItemSelecionado);
+};
